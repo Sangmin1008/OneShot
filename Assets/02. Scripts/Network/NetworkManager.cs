@@ -12,11 +12,6 @@ namespace OneShot
         private NetworkRunner _runner;
         public NetworkRunner Runner => _runner;
         
-        // 테스트 코드
-        private void Start()
-        {
-            StartGame(GameMode.Host);
-        }
 
         public async void StartGame(GameMode mode)
         {
