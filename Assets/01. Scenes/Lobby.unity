@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 314505946}
   - component: {fileID: 314505945}
   - component: {fileID: 314505947}
+  - component: {fileID: 314505948}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -180,6 +181,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
   playerPrefab:
     RawGuidValue: 0b03409f7034a284bbeb0ffd9e208c61
+--- !u!114 &314505948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 314505944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8f61814c6954ce98dc7273fc1a07436, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OneShot.InputProvider
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
