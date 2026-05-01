@@ -16,9 +16,14 @@ namespace OneShot
 
         [SerializeField] private AudioClip fireSfx;
 
+        [SerializeField] private LayerMask hitMask;
+
         // Host에서만 _fireCount 증가 -> 브로드캐스팅 -> 모든 클라이언트의 해당 플레이어에게 Render()에서 VFX 재생
         [Networked] private int _fireCount { get; set; }
         [Networked] private TickTimer _fireCooldown { get; set; }
+        [Networked] private Vector3 _lastImpactPoint { get; set; }
+        [Networked] private Vector3 _lastImpactNormal { get; set; }
+        [Networked] private NetworkBool _hasImpact { get; set; }
         
         private ChangeDetector _changeDetector;
         private AudioSource _fireSound;
@@ -57,11 +62,19 @@ namespace OneShot
             {
                 if (change == nameof(_fireCount))
                 {
-                    muzzleFlash.Play();
+                    muzzleFlash?.Play();
                     _fireSound?.PlayOneShot(fireSfx);
+                }
+
+                if (_hasImpact)
+                {
+                    var obj = Instantiate(bulletImpactPrefab, _lastImpactPoint, Quaternion.LookRotation(_lastImpactNormal));
+                    Destroy(obj, 5f);
                 }
             }
         }
+
+        #region 발사 로직 및 히트 판정
 
         private void Fire(Vector3 direction, Vector3 target)
         {
@@ -76,8 +89,53 @@ namespace OneShot
             {
                 _fireCount++; // 발사 횟수를 증가 -> 모든 클라이언트의 해당 플레이어에게 동기화 -> Render()에서 VFX 재생
                 
-                // TODO 레이캐스트 발사하는 로직
+                // 레이캐스트 발사하는 로직
+                FireCast(firePoint.position, fireDir);
             }
         }
+        
+        private void FireCast(Vector3 origin, Vector3 direction)
+        {
+            var hitOptions = HitOptions.IncludePhysX | HitOptions.SubtickAccuracy | HitOptions.IgnoreInputAuthority;
+            bool isHit = Runner.LagCompensation.Raycast(
+                origin: origin,
+                direction: direction,
+                length: range,
+                player: Object.InputAuthority,
+                hit: out LagCompensatedHit hit,
+                layerMask: hitMask,
+                options: hitOptions);
+
+            _hasImpact = isHit;
+
+            if (isHit)
+            {
+                _lastImpactPoint = hit.Point;
+                _lastImpactNormal = hit.Normal;
+            }
+            
+            if (!isHit) return;
+            
+            // HitBox 히트 처리 -> 데미지 처리
+            if (hit.Hitbox != null)
+            {
+                Logger.Log($"[PlayerWeapon] 히트: {hit.Hitbox.HitboxIndex} {hit.Hitbox.gameObject.name}");
+
+                if (hit.Hitbox.Root.TryGetComponent<IDamageable>(out var damageable))
+                {
+                    float dmg = (HitboxType)hit.Hitbox.HitboxIndex switch
+                    {
+                        HitboxType.Head => damage * 2f,
+                        HitboxType.Body => damage,
+                        _ => damage * 0.7f,
+                    };
+                    
+                    damageable.TakeDamage(dmg, Object.InputAuthority);
+                    Logger.Log($"[PlayerWeapon] 피격 부위: {hit.Hitbox.HitboxIndex} 데미지: {dmg}");
+                }
+            }
+        }
+        #endregion
+
     }
 }

@@ -46,7 +46,7 @@ namespace OneShot
             camRight.Normalize();
             
             Vector3 worldDir = ((camForward * v) + (camRight * h)).normalized;
-            Logger.Log($"WASD: {worldDir}");
+            // Logger.Log($"WASD: {worldDir}");
             
             return new Vector2(worldDir.x, worldDir.z);
         }
