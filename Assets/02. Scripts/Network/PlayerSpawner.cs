@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
+using OneShot;
 using UnityEngine;
 using Logger = OneShot.Logger;
 using Random = UnityEngine.Random;
@@ -9,6 +11,7 @@ using Random = UnityEngine.Random;
 public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkPrefabRef playerPrefab;
+    [SerializeField] private float respawnTime = 3f;
     
     // PlayerRef : 플레이어 정보를 식별하는 구조체
     private readonly Dictionary<PlayerRef, NetworkObject> _spawnedPlayers = new();
@@ -47,6 +50,12 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
         runner.SetPlayerObject(player, playerObject);
         // 딕셔너리 추가
         _spawnedPlayers[player] = playerObject;
+        
+        // 사망 이벤트 연결(구독)
+        if (playerObject.TryGetComponent<PlayerHealth>(out var health))
+        {
+            health.OnDeath += () => HandlePlayerDeath(player, runner);
+        }
 
         Logger.Log($"[PlayerSpawn] 플레이어 스폰: {player}");
     }
@@ -58,6 +67,23 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
             runner.Despawn(playerObject);
             _spawnedPlayers.Remove(player);
         }
+    }
+
+    private void HandlePlayerDeath(PlayerRef player, NetworkRunner runner)
+    {
+        DespawnPlayer(player, runner);
+        StartCoroutine(RespawnPlayer(player, runner));
+    }
+    
+    // 리스폰 코루틴
+    private IEnumerator RespawnPlayer(PlayerRef player, NetworkRunner runner)
+    {
+        yield return new WaitForSeconds(respawnTime);
+        
+        if (runner == null || !runner.IsRunning) yield break;
+        
+        SpawnPlayer(player, runner);
+        Logger.Log($"[PlayerSpawner] 플레이어 리스폰: {player}");
     }
 
 
