@@ -41,6 +41,20 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
         spawnPointObj.GetComponentsInChildren<Transform>(spawnPoints);
     }
+    
+    // 네트워크 Object가 Player의 AOI 영역에 진입
+    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+    {
+        Logger.Log($"[AOI] {obj.name}이 Player {player}의 AOI 영역에 진입");
+
+    }
+    
+    // 네트워크 Object가 Player의 AOI 영역에 나감
+    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+    {
+        Logger.Log($"[AOI] {obj.name}이 Player {player}의 AOI 영역에 나감");
+    }
+
     #endregion
 
 
@@ -103,8 +117,6 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     #region Fusion 미사용 콜백
 
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {}
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {}
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) {}
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) {}
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) {}

@@ -1,5 +1,56 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1855321766024110545
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2563802484089883025}
+  - component: {fileID: 8090192687921275090}
+  m_Layer: 0
+  m_Name: InterestCone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2563802484089883025
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855321766024110545}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1842443129750407384}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8090192687921275090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855321766024110545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d5b90a1a99b445da23303ba32734f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fusion.Addons.InterestManagement.InterestCone
+  IsEnabled: 1
+  Length: 20
+  StartSize: {x: 0, y: 0}
+  EndSize: {x: 30, y: 10}
+  MinSize: {x: 0, y: 0}
+  MaxSize: {x: 0, y: 0}
+  GizmoColor: {r: 1, g: 0, b: 0.7194252, a: 1}
 --- !u!1 &2330142371244659373
 GameObject:
   m_ObjectHideFlags: 0
@@ -48,6 +99,8 @@ GameObject:
   - component: {fileID: 5813107588002068797}
   - component: {fileID: 4783331811357445898}
   - component: {fileID: 2522797755087836368}
+  - component: {fileID: -3374918425755841904}
+  - component: {fileID: -6346197696081471370}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -70,6 +123,7 @@ Transform:
   m_Children:
   - {fileID: 671801666038275111}
   - {fileID: 3664315243458214534}
+  - {fileID: 2563802484089883025}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2703677261685276124
@@ -85,7 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
   SortKey: 13728043
-  ObjectInterest: 1
+  ObjectInterest: 0
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
@@ -95,6 +149,8 @@ MonoBehaviour:
   - {fileID: 5813107588002068797}
   - {fileID: 4783331811357445898}
   - {fileID: 2522797755087836368}
+  - {fileID: -3374918425755841904}
+  - {fileID: -6346197696081471370}
   ForceRemoteRenderTimeframe: 0
 --- !u!143 &6026161605005216711
 CharacterController:
@@ -155,6 +211,7 @@ MonoBehaviour:
   moveSpeed: 5
   sprintMultiplier: 1.5
   cameraPivot: {fileID: 3664315243458214534}
+  aoiRadius: 20
 --- !u!114 &-1876433470904441933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,6 +280,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OneShot.PlayerHealth
   maxHp: 100
+--- !u!114 &-3374918425755841904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6219259883461943444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c78cd5c3af3c48748c98a80f636692fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fusion.Addons.InterestManagement.PlayerInterestManager
+  _interestView: {fileID: -6346197696081471370}
+--- !u!114 &-6346197696081471370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6219259883461943444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fe4c3daba544713b2799354391b2cef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fusion.Addons.InterestManagement.PlayerInterestView
+  IsGlobal: 0
+  SortOrder: 0
+  InterestMode: 0
+  Shapes:
+  - {fileID: 8090192687921275090}
+  ChildProviders: []
 --- !u!1 &8103451650314484030
 GameObject:
   m_ObjectHideFlags: 0

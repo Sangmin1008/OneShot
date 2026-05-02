@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ namespace OneShot
         [SerializeField] private float sprintMultiplier = 1.5f;
         [SerializeField] private Transform cameraPivot;
 
+        // AOI 반경 - Sphere만 가능
+        [SerializeField] private float aoiRadius = 20f;
+        
         private NetworkCharacterController _cc;
 
         public override void Spawned()
@@ -21,10 +25,20 @@ namespace OneShot
                 var cam = FindFirstObjectByType<TPSCameraController>();
                 cam.SetTarget(cameraPivot);
             }
+
+            if (Runner.IsServer)
+            {
+                Runner.AddPlayerAreaOfInterest(Object.InputAuthority, transform.position, aoiRadius);
+            }
         }
 
         public override void FixedUpdateNetwork()
         {
+            if (Runner.IsServer)
+            {
+                Runner.AddPlayerAreaOfInterest(Object.InputAuthority, transform.position, aoiRadius);
+            }
+            
             // GetInput : 서버와 클라이언트가 동일한 입력값을 제공
             if (!GetInput(out PlayerNetworkInput input)) return;
             
@@ -57,6 +71,12 @@ namespace OneShot
             Vector3 rotDir = new Vector3(aimDir.x, 0f, aimDir.z);
             if (rotDir.sqrMagnitude < 0.01f) return;
             transform.rotation = Quaternion.LookRotation(rotDir);
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, aoiRadius);
         }
     }
 }

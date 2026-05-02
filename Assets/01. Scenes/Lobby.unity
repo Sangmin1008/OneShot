@@ -181,6 +181,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
   playerPrefab:
     RawGuidValue: 0b03409f7034a284bbeb0ffd9e208c61
+  respawnTime: 3
+  spawnPoints: []
 --- !u!114 &314505948
 MonoBehaviour:
   m_ObjectHideFlags: 0
