@@ -12,9 +12,12 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkPrefabRef playerPrefab;
     [SerializeField] private float respawnTime = 3f;
+    [SerializeField] private List<Transform> spawnPoints;
     
     // PlayerRef : 플레이어 정보를 식별하는 구조체
     private readonly Dictionary<PlayerRef, NetworkObject> _spawnedPlayers = new();
+
+    #region Fusion 콜백
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
@@ -30,19 +33,30 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
         Logger.Log($"[PlayerSpawner] 플레이어 퇴장: {player}");
     }
 
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+        // SpawnPoint 검색 및 저장
+        var spawnPointObj = GameObject.FindGameObjectWithTag("SpawnPoint");
+        if (spawnPointObj == null) return;
+
+        spawnPointObj.GetComponentsInChildren<Transform>(spawnPoints);
+    }
+    #endregion
 
 
     // 플레이어 생성 메서드
     private void SpawnPlayer(PlayerRef player, NetworkRunner runner)
     {
         // 랜덤 좌표
-        Vector3 spawnPos = new Vector3(Random.Range(-10f, 10f), 0f, Random.Range(-10f, 10f));
+        int idx = Random.Range(1, spawnPoints.Count);
+        Vector3 spawnPos = spawnPoints[idx].position;
+        Quaternion spawnRot = spawnPoints[idx].rotation;
         
         // 플레이어 오브젝트 생성
         NetworkObject playerObject = runner.Spawn(
             prefabRef: playerPrefab,
             position: spawnPos,
-            rotation: Quaternion.identity,
+            rotation: spawnRot,
             inputAuthority: player
         );
         
@@ -87,7 +101,7 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 
-    #region INetworkRunnerCallbacks
+    #region Fusion 미사용 콜백
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {}
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {}
@@ -104,7 +118,6 @@ public class PlayerSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) {}
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) {}
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) {}
-    public void OnSceneLoadDone(NetworkRunner runner) {}
     public void OnSceneLoadStart(NetworkRunner runner) {}
     
     #endregion
