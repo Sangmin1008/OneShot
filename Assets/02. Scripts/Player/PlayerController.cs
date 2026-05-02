@@ -1,5 +1,6 @@
 using System;
 using Fusion;
+using Fusion.Addons.SimpleKCC;
 using UnityEngine;
 
 namespace OneShot
@@ -13,11 +14,13 @@ namespace OneShot
         // AOI 반경 - Sphere만 가능
         [SerializeField] private float aoiRadius = 20f;
         
-        private NetworkCharacterController _cc;
+        // private NetworkCharacterController _cc;
+        private SimpleKCC _kcc;
 
         public override void Spawned()
         {
-            _cc = GetComponent<NetworkCharacterController>();
+            _kcc = GetComponent<SimpleKCC>();
+            _kcc.SetGravity(Physics.gravity.y * 10f);
             
             // 자신의 로컬 플레이어 여부 HasInputAuthority
             if (HasInputAuthority)
@@ -53,24 +56,33 @@ namespace OneShot
             if (moveDir.sqrMagnitude < 0.01f)
             {
                 // 입력을 무시할 때 관성을 제거
-                _cc.Velocity = new Vector3(0f, _cc.Velocity.y, 0f);
+                // _cc.Velocity = new Vector3(0f, _cc.Velocity.y, 0f);
+                _kcc.ResetVelocity();
                 return;
             }
             
             Vector3 moveDirection = new Vector3(moveDir.x, 0f, moveDir.y);
             float speed = moveSpeed * (isSprinting ? sprintMultiplier : 1f);
             
+            // KCC는 내부적으로 Runner.DeltaTime 계산 처리
+            _kcc.Move(moveDirection * speed);
+            
             // NCC 내부의 MaxSpeed 동적으로 변경
             // Time.DeltaTime, Time.FixedDeltaTime => Runner.DeltaTime
-            _cc.maxSpeed = speed;
-            _cc.Move(moveDirection * moveSpeed * Runner.DeltaTime);
+            // _cc.maxSpeed = speed;
+            // _cc.Move(moveDirection * moveSpeed * Runner.DeltaTime);
         }
 
         private void FaceAimDirection(Vector3 aimDir)
         {
             Vector3 rotDir = new Vector3(aimDir.x, 0f, aimDir.z);
             if (rotDir.sqrMagnitude < 0.01f) return;
-            transform.rotation = Quaternion.LookRotation(rotDir);
+            
+            // 회전 보간처리 Slerp
+            var rot = Quaternion.Slerp(_kcc.LookRotation, Quaternion.LookRotation(rotDir), 0.2f);
+            _kcc.SetLookRotation(rot);
+            
+            // transform.rotation = Quaternion.LookRotation(rotDir);
         }
 
         private void OnDrawGizmos()
