@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: -1876433470904441933}
   - component: {fileID: 5813107588002068797}
   - component: {fileID: 4783331811357445898}
+  - component: {fileID: 2522797755087836368}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -93,6 +94,7 @@ MonoBehaviour:
   - {fileID: -1876433470904441933}
   - {fileID: 5813107588002068797}
   - {fileID: 4783331811357445898}
+  - {fileID: 2522797755087836368}
   ForceRemoteRenderTimeframe: 0
 --- !u!143 &6026161605005216711
 CharacterController:
@@ -208,6 +210,19 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 192
+--- !u!114 &2522797755087836368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6219259883461943444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313d1df26a5715944b6ce9930cd9d223, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OneShot.PlayerHealth
+  maxHp: 100
 --- !u!1 &8103451650314484030
 GameObject:
   m_ObjectHideFlags: 0
